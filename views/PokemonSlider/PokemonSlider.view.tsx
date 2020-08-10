@@ -9,11 +9,14 @@ import {
 } from "react-native";
 import { data, PokeDetail } from "./data";
 import { LinearGradient } from "expo-linear-gradient";
+import { AppText } from "../../components/AppText";
 
 const { width } = Dimensions.get("window");
 const breakpoints = data.map((_, i) => i * width);
 const pokeLightMutedColors = data.map((poke) => poke.lightMuted);
 const pokeDarkVibrantColors = data.map((poke) => poke.darkVibrant);
+const pokeNumbers = data.map((poke) => poke.number);
+const TICKER_HEIGHT = 40;
 
 /**
  * Slider
@@ -45,6 +48,7 @@ export const PokemonSliderView: React.FC = () => {
         locations={[0, 0.6]}
         style={[StyleSheet.absoluteFill]}
       />
+      <Ticker scrollX={scrollX} />
       {/* FlatList of Pokemon */}
       <Animated.FlatList
         data={data}
@@ -144,6 +148,49 @@ const PokeItem: React.FC<{
           {pokemon.description}
         </Animated.Text>
       </View>
+    </View>
+  );
+};
+
+const Ticker: React.FC<{ scrollX: Animated.Value }> = ({ scrollX }) => {
+  const inputRange = [-width, 0, width];
+  const translateY = scrollX.interpolate({
+    inputRange,
+    outputRange: [TICKER_HEIGHT, 0, -TICKER_HEIGHT],
+  });
+
+  return (
+    <View
+      style={{
+        position: "absolute",
+        top: 50,
+        left: 20,
+        overflow: "hidden",
+        height: TICKER_HEIGHT,
+      }}
+    >
+      <Animated.View style={{ transform: [{ translateY }] }}>
+        {pokeNumbers.map((num, index) => (
+          <AppText
+            key={index}
+            style={{
+              fontSize: TICKER_HEIGHT,
+              lineHeight: TICKER_HEIGHT,
+              fontWeight: "bold",
+            }}
+          >
+            <AppText
+              style={{
+                fontSize: TICKER_HEIGHT / 1.5,
+                color: "rgba(0, 0, 0, 0.7)",
+              }}
+            >
+              #
+            </AppText>
+            {num}
+          </AppText>
+        ))}
+      </Animated.View>
     </View>
   );
 };
