@@ -6,6 +6,8 @@ import { createDrawerNavigator } from "@react-navigation/drawer";
 import { ROUTES } from "./config/routes";
 import { HomeView } from "./views/Home/Home.view";
 import { ImageLoadView } from "./views/ImageLoad/ImageLoad.view";
+import { ButtonsView } from "./views/Buttons/Buttons.view";
+import { PokemonSliderView } from "./views/PokemonSlider/PokemonSlider.view";
 
 // Drawer nav
 const Drawer = createDrawerNavigator();
@@ -14,6 +16,8 @@ const Drawer = createDrawerNavigator();
 const DRAWER_ROUTES = [
   { name: ROUTES.HOME, component: HomeView },
   { name: ROUTES.IMAGE_LOAD, component: ImageLoadView },
+  { name: ROUTES.BUTTONS, component: ButtonsView },
+  { name: ROUTES.POKEMON_SLIDER, component: PokemonSliderView },
 ];
 
 const App: React.FC = () => {
