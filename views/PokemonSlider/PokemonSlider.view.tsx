@@ -3,6 +3,7 @@ import * as React from "react";
 import {
   Animated,
   Dimensions,
+  Image,
   SafeAreaView,
   StyleSheet,
   View,
@@ -17,6 +18,8 @@ const pokeLightMutedColors = data.map((poke) => poke.lightMuted);
 const pokeDarkVibrantColors = data.map((poke) => poke.darkVibrant);
 const pokeNumbers = data.map((poke) => poke.number);
 const TICKER_HEIGHT = 40;
+const THUMB_SIZE = 50;
+const THUMB_IMAGE_SIZE = 0.9 * THUMB_SIZE;
 
 /**
  * Slider
@@ -48,29 +51,39 @@ export const PokemonSliderView: React.FC = () => {
         locations={[0, 0.6]}
         style={[StyleSheet.absoluteFill]}
       />
+      {/* Number ticker */}
       <Ticker scrollX={scrollX} />
-      {/* FlatList of Pokemon */}
-      <Animated.FlatList
-        data={data}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        keyExtractor={(item: PokeDetail) => item.name}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-          { useNativeDriver: false },
-        )}
-        renderItem={({ item, index }: { item: PokeDetail; index: number }) => (
-          <PokeItem
-            pokemon={item}
-            scrollX={scrollX}
-            itemIndex={index}
-            primaryColor={primaryColor}
-          />
-        )}
-        scrollEventThrottle={16}
-        decelerationRate={-1}
-        snapToInterval={width}
-      />
+      <View style={{ flexGrow: 1 }}>
+        {/* FlatList of Pokemon */}
+        <Animated.FlatList
+          data={data}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          keyExtractor={(item: PokeDetail) => item.name}
+          onScroll={Animated.event(
+            [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+            { useNativeDriver: false },
+          )}
+          renderItem={({
+            item,
+            index,
+          }: {
+            item: PokeDetail;
+            index: number;
+          }) => (
+            <PokeItem
+              pokemon={item}
+              scrollX={scrollX}
+              itemIndex={index}
+              primaryColor={primaryColor}
+            />
+          )}
+          scrollEventThrottle={16}
+          decelerationRate={-1}
+          snapToInterval={width}
+        />
+      </View>
+      <Pagination scrollX={scrollX} />
     </SafeAreaView>
   );
 };
@@ -152,6 +165,9 @@ const PokeItem: React.FC<{
   );
 };
 
+/**
+ * Number ticker
+ */
 const Ticker: React.FC<{ scrollX: Animated.Value }> = ({ scrollX }) => {
   const inputRange = [-width, 0, width];
   const translateY = scrollX.interpolate({
@@ -190,6 +206,90 @@ const Ticker: React.FC<{ scrollX: Animated.Value }> = ({ scrollX }) => {
             {num}
           </AppText>
         ))}
+      </Animated.View>
+    </View>
+  );
+};
+
+/**
+ * Pagination on bottom
+ */
+const Pagination: React.FC<{ scrollX: Animated.Value }> = ({ scrollX }) => {
+  const inputRange = [-width, 0, width];
+  const translateX = scrollX.interpolate({
+    inputRange,
+    outputRange: [THUMB_SIZE, 0, -THUMB_SIZE],
+  });
+
+  return (
+    <View>
+      {/*<View*/}
+      {/*  style={{*/}
+      {/*    position: "absolute",*/}
+      {/*    width: THUMB_SIZE,*/}
+      {/*    height: THUMB_SIZE,*/}
+      {/*    borderRadius: THUMB_SIZE / 2,*/}
+      {/*    borderWidth: 2,*/}
+      {/*    borderColor: "black",*/}
+      {/*    left: width / 2 - THUMB_SIZE / 2,*/}
+      {/*    top: 0,*/}
+      {/*    zIndex: 2,*/}
+      {/*  }}*/}
+      {/*/>*/}
+      <Animated.View
+        style={{
+          flexDirection: "row",
+          transform: [
+            { translateX: width / 2 - THUMB_SIZE / 2 },
+            { translateX },
+          ],
+        }}
+      >
+        {data.map((pokemon, index) => {
+          const opacity = scrollX.interpolate({
+            inputRange: [
+              (index - 2) * width,
+              (index - 1) * width,
+              index * width,
+              (index + 1) * width,
+              (index + 2) * width,
+            ],
+            outputRange: [0.25, 0.5, 1, 0.5, 0.25],
+            extrapolate: "clamp",
+          });
+          const scale = scrollX.interpolate({
+            inputRange: [
+              (index - 1) * width,
+              index * width,
+              (index + 1) * width,
+            ],
+            outputRange: [0.7, 1, 0.7],
+            extrapolate: "clamp",
+          });
+
+          return (
+            <View
+              key={pokemon.name}
+              style={{
+                width: THUMB_SIZE,
+                height: THUMB_SIZE,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Animated.Image
+                source={pokemon.image}
+                style={{
+                  width: THUMB_IMAGE_SIZE,
+                  height: THUMB_IMAGE_SIZE,
+                  resizeMode: "contain",
+                  opacity,
+                  transform: [{ scale }],
+                }}
+              />
+            </View>
+          );
+        })}
       </Animated.View>
     </View>
   );
