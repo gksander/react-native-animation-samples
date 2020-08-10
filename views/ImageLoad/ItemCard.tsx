@@ -60,9 +60,9 @@ export const ItemCard: React.FC<{ num: number }> = ({ num }) => {
     <View style={SHADOW_STYLES.default}>
       <TouchableOpacity style={styles.cardContainer} onPress={getNewImage}>
         <View>
-          <Animated.View style={styles.activityIndicatorContainer}>
+          <View style={styles.activityIndicatorContainer}>
             {loadState === "LOADING" && <ActivityIndicator />}
-          </Animated.View>
+          </View>
           <Animated.Image
             source={{
               uri: `https://picsum.photos/200/300?rd=${num}-${stamp.current}`,
