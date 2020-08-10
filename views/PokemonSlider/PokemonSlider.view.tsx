@@ -3,7 +3,6 @@ import * as React from "react";
 import {
   Animated,
   Dimensions,
-  Image,
   SafeAreaView,
   StyleSheet,
   View,
@@ -12,14 +11,17 @@ import { data, PokeDetail } from "./data";
 import { LinearGradient } from "expo-linear-gradient";
 import { AppText } from "../../components/AppText";
 
+// Sizing
 const { width } = Dimensions.get("window");
+const TICKER_HEIGHT = 40;
+const THUMB_SIZE = 50;
+const THUMB_IMAGE_SIZE = 0.9 * THUMB_SIZE;
+
+// Extract some values
 const breakpoints = data.map((_, i) => i * width);
 const pokeLightMutedColors = data.map((poke) => poke.lightMuted);
 const pokeDarkVibrantColors = data.map((poke) => poke.darkVibrant);
 const pokeNumbers = data.map((poke) => poke.number);
-const TICKER_HEIGHT = 40;
-const THUMB_SIZE = 50;
-const THUMB_IMAGE_SIZE = 0.9 * THUMB_SIZE;
 
 /**
  * Slider
@@ -83,6 +85,7 @@ export const PokemonSliderView: React.FC = () => {
           snapToInterval={width}
         />
       </View>
+      {/* Pagination on bottom */}
       <Pagination scrollX={scrollX} />
     </SafeAreaView>
   );
@@ -141,13 +144,13 @@ const PokeItem: React.FC<{
       </View>
       <View style={{ paddingHorizontal: 20 }}>
         <Animated.Text
-          style={{
-            fontWeight: "bold",
-            fontSize: 36,
-            marginBottom: 8,
-            transform: [{ translateX: translateXHeading }],
-            color: primaryColor,
-          }}
+          style={[
+            styles.pokeNameText,
+            {
+              transform: [{ translateX: translateXHeading }],
+              color: primaryColor,
+            },
+          ]}
         >
           {pokemon.name}
         </Animated.Text>
@@ -176,33 +179,11 @@ const Ticker: React.FC<{ scrollX: Animated.Value }> = ({ scrollX }) => {
   });
 
   return (
-    <View
-      style={{
-        position: "absolute",
-        top: 50,
-        left: 20,
-        overflow: "hidden",
-        height: TICKER_HEIGHT,
-      }}
-    >
+    <View style={styles.tickerContainer}>
       <Animated.View style={{ transform: [{ translateY }] }}>
         {pokeNumbers.map((num, index) => (
-          <AppText
-            key={index}
-            style={{
-              fontSize: TICKER_HEIGHT,
-              lineHeight: TICKER_HEIGHT,
-              fontWeight: "bold",
-            }}
-          >
-            <AppText
-              style={{
-                fontSize: TICKER_HEIGHT / 1.5,
-                color: "rgba(0, 0, 0, 0.7)",
-              }}
-            >
-              #
-            </AppText>
+          <AppText key={index} style={styles.tickerText}>
+            <AppText style={styles.tickerSubText}>#</AppText>
             {num}
           </AppText>
         ))}
@@ -223,19 +204,6 @@ const Pagination: React.FC<{ scrollX: Animated.Value }> = ({ scrollX }) => {
 
   return (
     <View>
-      {/*<View*/}
-      {/*  style={{*/}
-      {/*    position: "absolute",*/}
-      {/*    width: THUMB_SIZE,*/}
-      {/*    height: THUMB_SIZE,*/}
-      {/*    borderRadius: THUMB_SIZE / 2,*/}
-      {/*    borderWidth: 2,*/}
-      {/*    borderColor: "black",*/}
-      {/*    left: width / 2 - THUMB_SIZE / 2,*/}
-      {/*    top: 0,*/}
-      {/*    zIndex: 2,*/}
-      {/*  }}*/}
-      {/*/>*/}
       <Animated.View
         style={{
           flexDirection: "row",
@@ -279,13 +247,13 @@ const Pagination: React.FC<{ scrollX: Animated.Value }> = ({ scrollX }) => {
             >
               <Animated.Image
                 source={pokemon.image}
-                style={{
-                  width: THUMB_IMAGE_SIZE,
-                  height: THUMB_IMAGE_SIZE,
-                  resizeMode: "contain",
-                  opacity,
-                  transform: [{ scale }],
-                }}
+                style={[
+                  styles.paginationImage,
+                  {
+                    opacity,
+                    transform: [{ scale }],
+                  },
+                ]}
               />
             </View>
           );
@@ -299,6 +267,32 @@ const styles = StyleSheet.create({
   imageStyle: {
     width: width / 1.8,
     height: width / 1.8,
+    resizeMode: "contain",
+  },
+  pokeNameText: {
+    fontWeight: "bold",
+    fontSize: 36,
+    marginBottom: 8,
+  },
+  tickerContainer: {
+    position: "absolute",
+    top: 50,
+    left: 20,
+    overflow: "hidden",
+    height: TICKER_HEIGHT,
+  },
+  tickerText: {
+    fontSize: TICKER_HEIGHT,
+    lineHeight: TICKER_HEIGHT,
+    fontWeight: "bold",
+  },
+  tickerSubText: {
+    fontSize: TICKER_HEIGHT / 1.5,
+    color: "rgba(0, 0, 0, 0.7)",
+  },
+  paginationImage: {
+    width: THUMB_IMAGE_SIZE,
+    height: THUMB_IMAGE_SIZE,
     resizeMode: "contain",
   },
 });
