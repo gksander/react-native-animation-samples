@@ -23,7 +23,7 @@ const DRAWER_ROUTES = [
 const App: React.FC = () => {
   return (
     <NavigationContainer>
-      <Drawer.Navigator initialRouteName={ROUTES.HOME}>
+      <Drawer.Navigator initialRouteName={ROUTES.POKEMON_SLIDER}>
         {DRAWER_ROUTES.map((route) => (
           <Drawer.Screen
             key={route.name}

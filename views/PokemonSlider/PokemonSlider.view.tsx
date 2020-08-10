@@ -3,25 +3,49 @@ import * as React from "react";
 import {
   Animated,
   Dimensions,
-  FlatList,
-  Image,
   SafeAreaView,
   StyleSheet,
   View,
 } from "react-native";
-import { AppText } from "../../components/AppText";
 import { data, PokeDetail } from "./data";
+import { LinearGradient } from "expo-linear-gradient";
 
-const { width, height } = Dimensions.get("window");
+const { width } = Dimensions.get("window");
+const breakpoints = data.map((_, i) => i * width);
+const pokeLightMutedColors = data.map((poke) => poke.lightMuted);
+const pokeDarkVibrantColors = data.map((poke) => poke.darkVibrant);
 
 /**
  * Slider
  */
 export const PokemonSliderView: React.FC = () => {
   const scrollX = React.useRef(new Animated.Value(0)).current;
+  const backgroundColor = scrollX.interpolate({
+    inputRange: breakpoints,
+    outputRange: pokeLightMutedColors,
+  });
+  const primaryColor = scrollX.interpolate({
+    inputRange: breakpoints,
+    outputRange: pokeDarkVibrantColors,
+  });
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
+      {/* Backdrop */}
+      <Animated.View
+        style={[
+          StyleSheet.absoluteFill,
+          {
+            backgroundColor,
+          },
+        ]}
+      />
+      <LinearGradient
+        colors={["transparent", "#fff"]}
+        locations={[0, 0.6]}
+        style={[StyleSheet.absoluteFill]}
+      />
+      {/* FlatList of Pokemon */}
       <Animated.FlatList
         data={data}
         horizontal
@@ -29,10 +53,15 @@ export const PokemonSliderView: React.FC = () => {
         keyExtractor={(item: PokeDetail) => item.name}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-          { useNativeDriver: true },
+          { useNativeDriver: false },
         )}
         renderItem={({ item, index }: { item: PokeDetail; index: number }) => (
-          <PokeItem pokemon={item} scrollX={scrollX} itemIndex={index} />
+          <PokeItem
+            pokemon={item}
+            scrollX={scrollX}
+            itemIndex={index}
+            primaryColor={primaryColor}
+          />
         )}
         scrollEventThrottle={16}
         decelerationRate={-1}
@@ -42,11 +71,15 @@ export const PokemonSliderView: React.FC = () => {
   );
 };
 
+/**
+ * Actual pokemon details
+ */
 const PokeItem: React.FC<{
   pokemon: PokeDetail;
   scrollX: Animated.Value;
   itemIndex: number;
-}> = ({ pokemon, scrollX, itemIndex }) => {
+  primaryColor: Animated.AnimatedInterpolation;
+}> = ({ pokemon, scrollX, itemIndex, primaryColor }) => {
   const inputRange = [
     (itemIndex - 1) * width,
     itemIndex * width,
@@ -76,14 +109,14 @@ const PokeItem: React.FC<{
 
   return (
     <View style={{ width, justifyContent: "center" }}>
-      <View style={{ alignItems: "center", marginBottom: 20 }}>
+      <View style={{ alignItems: "center" }}>
         <Animated.Image
           source={pokemon.image}
           style={[
             styles.imageStyle,
             {
               opacity,
-              transform: [{ scale }],
+              transform: [{ scale }, { translateY: -50 }],
             },
           ]}
           resizeMode="contain"
@@ -96,6 +129,7 @@ const PokeItem: React.FC<{
             fontSize: 36,
             marginBottom: 8,
             transform: [{ translateX: translateXHeading }],
+            color: primaryColor,
           }}
         >
           {pokemon.name}
