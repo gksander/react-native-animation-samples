@@ -7,7 +7,7 @@ import {
   StyleSheet,
   View,
 } from "react-native";
-import { data, PokeDetail } from "./data";
+import { pokemonData1, PokeDetail } from "../../utils/pokemonData1";
 import { LinearGradient } from "expo-linear-gradient";
 import { AppText } from "../../components/AppText";
 
@@ -18,10 +18,10 @@ const THUMB_SIZE = 50;
 const THUMB_IMAGE_SIZE = 0.9 * THUMB_SIZE;
 
 // Extract some values
-const breakpoints = data.map((_, i) => i * width);
-const pokeLightMutedColors = data.map((poke) => poke.lightMuted);
-const pokeDarkVibrantColors = data.map((poke) => poke.darkVibrant);
-const pokeNumbers = data.map((poke) => poke.number);
+const breakpoints = pokemonData1.map((_, i) => i * width);
+const pokeLightMutedColors = pokemonData1.map((poke) => poke.lightMuted);
+const pokeDarkVibrantColors = pokemonData1.map((poke) => poke.darkVibrant);
+const pokeNumbers = pokemonData1.map((poke) => poke.number);
 
 /**
  * Slider
@@ -58,7 +58,7 @@ export const PokemonSliderView: React.FC = () => {
       <View style={{ flexGrow: 1 }}>
         {/* FlatList of Pokemon */}
         <Animated.FlatList
-          data={data}
+          data={pokemonData1}
           horizontal
           showsHorizontalScrollIndicator={false}
           keyExtractor={(item: PokeDetail) => item.name}
@@ -213,7 +213,7 @@ const Pagination: React.FC<{ scrollX: Animated.Value }> = ({ scrollX }) => {
           ],
         }}
       >
-        {data.map((pokemon, index) => {
+        {pokemonData1.map((pokemon, index) => {
           const opacity = scrollX.interpolate({
             inputRange: [
               (index - 2) * width,

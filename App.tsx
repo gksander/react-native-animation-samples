@@ -8,6 +8,8 @@ import { HomeView } from "./views/Home/Home.view";
 import { ImageLoadView } from "./views/ImageLoad/ImageLoad.view";
 import { ButtonsView } from "./views/Buttons/Buttons.view";
 import { PokemonSliderView } from "./views/PokemonSlider/PokemonSlider.view";
+import { CircularProgressView } from "./views/CircularProgress/CircularProgress.view";
+import { FlatlistCardDisappear } from "./views/FlatlistCardDisappear/FlatlistCardDisappear.view";
 
 // Drawer nav
 const Drawer = createDrawerNavigator();
@@ -18,12 +20,14 @@ const DRAWER_ROUTES = [
   { name: ROUTES.IMAGE_LOAD, component: ImageLoadView },
   { name: ROUTES.BUTTONS, component: ButtonsView },
   { name: ROUTES.POKEMON_SLIDER, component: PokemonSliderView },
+  { name: ROUTES.FLATLIST_CARD_DISAPPEAR, component: FlatlistCardDisappear },
+  // { name: ROUTES.CIRCULAR_PROGRESS, component: CircularProgressView },
 ];
 
 const App: React.FC = () => {
   return (
     <NavigationContainer>
-      <Drawer.Navigator initialRouteName={ROUTES.POKEMON_SLIDER}>
+      <Drawer.Navigator initialRouteName={ROUTES.FLATLIST_CARD_DISAPPEAR}>
         {DRAWER_ROUTES.map((route) => (
           <Drawer.Screen
             key={route.name}
