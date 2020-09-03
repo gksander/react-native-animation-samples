@@ -1,24 +1,31 @@
 import * as React from "react";
-import { SafeAreaView } from "react-native";
-import { AppText } from "../../components/AppText";
+import { Dimensions, SafeAreaView } from "react-native";
 import { CircularProgress } from "./CircularProgress";
 
-const TOTAL = 10;
+const TOTAL = 75;
+const { width } = Dimensions.get("window");
 
 export const CircularProgressView: React.FC = () => {
-  const [currAmount, setCurrAmount] = React.useState(0);
+  const [currAmount, setCurrAmount] = React.useState(5);
 
   React.useEffect(() => {
     const interval = setInterval(() => {
-      setCurrAmount((curr) => (curr + 1) % (TOTAL + 1));
-    }, 1000);
+      setCurrAmount(Math.floor(Math.random() * TOTAL));
+    }, 2000);
 
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <CircularProgress totalAmount={TOTAL} currentAmount={currAmount} />
+    <SafeAreaView
+      style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+    >
+      <CircularProgress
+        totalAmount={TOTAL}
+        currentAmount={currAmount}
+        radius={width / 3}
+        strokeWidth={15}
+      />
     </SafeAreaView>
   );
 };

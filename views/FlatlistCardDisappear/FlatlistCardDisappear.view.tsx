@@ -1,7 +1,7 @@
 import * as React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AppText } from "../../components/AppText";
-import { Animated, Image, StyleSheet, View } from "react-native";
+import { Animated, Dimensions, Image, StyleSheet, View } from "react-native";
 import { PokeDetail, pokemonData1 } from "../../utils/pokemonData1";
 import { SHADOW_STYLES } from "../../utils/styleUtils";
 import { Spacer } from "../../components/Spacer";
@@ -9,23 +9,31 @@ import { LinearGradient } from "expo-linear-gradient";
 
 // Constants
 const CONTAINER_PADDING = 24;
+const MARGIN = 12;
+const CARD_HEIGHT = 130;
+const CARD_CONTAINER_HEIGHT = CARD_HEIGHT + 2 * MARGIN;
+const height = Dimensions.get("window").height;
 
 // Flatlist details
 export const FlatlistCardDisappear: React.FC = () => {
-  const scrollY = React.useRef(new Animated.Value(0)).current;
+  const y = React.useRef(new Animated.Value(0)).current;
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
+      <View style={StyleSheet.absoluteFill}>
+        <View style={{ backgroundColor: "red", flex: 1 }} />
+        <View style={{ backgroundColor: "blue", flex: 1 }} />
+      </View>
       <Animated.FlatList
         data={pokemonData1}
         keyExtractor={(item: PokeDetail) => item.name}
-        renderItem={({ item }: { item: PokeDetail }) => (
-          <PokeCard pokemon={item} />
+        renderItem={({ item, index }: { item: PokeDetail; index: number }) => (
+          <PokeCard pokemon={item} index={index} y={y} />
         )}
         onScroll={Animated.event(
           [
             {
-              nativeEvent: { contentOffset: { y: scrollY } },
+              nativeEvent: { contentOffset: { y } },
             },
           ],
           { useNativeDriver: true },
@@ -34,17 +42,41 @@ export const FlatlistCardDisappear: React.FC = () => {
         bounces={false}
         contentContainerStyle={{
           padding: CONTAINER_PADDING,
+          transform: [{ translateY: height / 2 - CARD_CONTAINER_HEIGHT }],
         }}
-        ItemSeparatorComponent={ItemSpacer}
       />
     </SafeAreaView>
   );
 };
 
 // The Poke card
-const PokeCard: React.FC<{ pokemon: PokeDetail }> = ({ pokemon }) => {
+const PokeCard: React.FC<{
+  pokemon: PokeDetail;
+  y: Animated.Value;
+  index: number;
+}> = ({ pokemon, y, index }) => {
+  // Some computations here
+  const offset = Animated.subtract(index * CARD_CONTAINER_HEIGHT, y);
+  const opacity = offset.interpolate({
+    inputRange: [-CARD_CONTAINER_HEIGHT, 0],
+    outputRange: [0.5, 1],
+    extrapolate: "clamp",
+  });
+  const scale = offset.interpolate({
+    inputRange: [-CARD_CONTAINER_HEIGHT, 0],
+    outputRange: [0.5, 1],
+    extrapolate: "clamp",
+  });
+  const translateY = 0;
+
   return (
-    <View style={[styles.card, SHADOW_STYLES.default]}>
+    <Animated.View
+      style={[
+        styles.card,
+        SHADOW_STYLES.default,
+        { opacity, transform: [{ scale }, { translateY }] },
+      ]}
+    >
       <LinearGradient
         colors={[pokemon.lightMuted, "transparent"]}
         locations={[0, 0.3]}
@@ -77,13 +109,9 @@ const PokeCard: React.FC<{ pokemon: PokeDetail }> = ({ pokemon }) => {
         <Spacer height={8} />
         <AppText numberOfLines={4}>{pokemon.description}</AppText>
       </View>
-    </View>
+    </Animated.View>
   );
 };
-
-const ItemSpacer: React.FC = () => (
-  <View style={{ height: CONTAINER_PADDING }} />
-);
 
 const styles = StyleSheet.create({
   card: {
@@ -92,5 +120,7 @@ const styles = StyleSheet.create({
     padding: 8,
     flexDirection: "row",
     // overflow: "hidden",
+    marginVertical: MARGIN,
+    height: CARD_HEIGHT,
   },
 });

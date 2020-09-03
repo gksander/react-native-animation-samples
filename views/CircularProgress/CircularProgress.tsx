@@ -1,36 +1,117 @@
 import * as React from "react";
-import { View } from "react-native";
-import Svg, { Circle, Path, Rect } from "react-native-svg";
+import {
+  Animated,
+  Easing,
+  NativeMethods,
+  StyleSheet,
+  TextInput,
+  View,
+} from "react-native";
+import Svg, { Circle, G, Path, Rect } from "react-native-svg";
 
 type CircularProgressProps = {
   totalAmount: number;
   currentAmount: number;
-  innerText?: string;
+  animDuration?: number;
+  color?: string;
+  radius?: number;
+  strokeWidth?: number;
 };
 
-const R = 25;
+const AnimatedCircle = Animated.createAnimatedComponent(Circle);
+const AnimatedInput = Animated.createAnimatedComponent(TextInput);
 
 export const CircularProgress: React.FC<CircularProgressProps> = ({
   totalAmount,
   currentAmount,
-  innerText,
+  animDuration = 500,
+  color = "green",
+  radius = 100,
+  strokeWidth = 10,
 }) => {
-  // Derivations
-  const alpha = -Math.PI / 2 + (currentAmount / totalAmount) * 2 * Math.PI;
-  const endX = R * Math.cos(alpha) || 0;
-  const endY = R * Math.sin(alpha) || 0;
-  const largeArc = endX < 0 ? 1 : 0;
+  // Derived values
+  const CIRCUMFERENCE = 2 * Math.PI * radius;
+  const HALF_WIDTH = radius + strokeWidth;
+
+  // Local state
+  const animValue = React.useRef(new Animated.Value(0)).current;
+  const circleRef = React.useRef<NativeMethods>();
+  const inputRef = React.useRef<NativeMethods>();
+
+  // Add listener
+  React.useEffect(() => {
+    animValue.addListener((v) => {
+      const percentComplete = v.value / totalAmount;
+      const strokeDashoffset = (1 - percentComplete) * CIRCUMFERENCE;
+      circleRef?.current?.setNativeProps({ strokeDashoffset });
+      inputRef?.current?.setNativeProps({ text: `${Math.round(v.value)}` });
+    });
+
+    return () => animValue.removeAllListeners();
+  }, [totalAmount, CIRCUMFERENCE]);
+
+  React.useEffect(() => {
+    return Animated.timing(animValue, {
+      toValue: currentAmount,
+      duration: animDuration,
+      useNativeDriver: true,
+      easing: Easing.out(Easing.ease),
+    }).start();
+  }, [currentAmount, animDuration]);
 
   return (
-    <View style={{ aspectRatio: 1, backgroundColor: "blue" }}>
-      <Svg width="100%" height="100%" viewBox={`${-R} ${-R} ${2 * R} ${2 * R}`}>
-        <Path
-          d={`M0,${-R} A${R},${R} 0 ${largeArc} 1 ${endX} ${endY}`}
-          stroke="red"
-        />
-        {/*<Rect x={-50} y={-50} width={25} height={25} fill="green" />*/}
-        <Circle cx={endX} cy={endY} r={3} fill="green" />
+    <View style={{ width: radius * 2, height: radius * 2 }}>
+      <Svg
+        width={radius * 2}
+        height={radius * 2}
+        viewBox={`${-HALF_WIDTH} ${-HALF_WIDTH} ${2 * HALF_WIDTH} ${
+          2 * HALF_WIDTH
+        }`}
+      >
+        <G rotation="-90">
+          {/* Progress */}
+          <Circle
+            // @ts-ignore
+            ref={circleRef}
+            cx={0}
+            cy={0}
+            r={radius}
+            fill="transparent"
+            stroke={color}
+            strokeWidth={strokeWidth}
+            strokeLinecap="round"
+            strokeDashoffset={CIRCUMFERENCE}
+            strokeDasharray={CIRCUMFERENCE}
+          />
+          {/* Background */}
+          <Circle
+            cx={0}
+            cy={0}
+            r={radius}
+            fill="transparent"
+            stroke={color}
+            strokeWidth={strokeWidth}
+            strokeLinejoin="round"
+            strokeOpacity="0.1"
+          />
+        </G>
       </Svg>
+      <AnimatedInput
+        // @ts-ignore
+        ref={inputRef}
+        undlinerColorAndroid="transparent"
+        editable={false}
+        defaultValue="0"
+        style={[
+          StyleSheet.absoluteFill,
+          {
+            fontSize: radius / 2,
+            color,
+            fontWidth: "900",
+            textAlign: "center",
+          },
+        ]}
+      />
     </View>
   );
 };

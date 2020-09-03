@@ -21,13 +21,13 @@ const DRAWER_ROUTES = [
   { name: ROUTES.BUTTONS, component: ButtonsView },
   { name: ROUTES.POKEMON_SLIDER, component: PokemonSliderView },
   { name: ROUTES.FLATLIST_CARD_DISAPPEAR, component: FlatlistCardDisappear },
-  // { name: ROUTES.CIRCULAR_PROGRESS, component: CircularProgressView },
+  { name: ROUTES.CIRCULAR_PROGRESS, component: CircularProgressView },
 ];
 
 const App: React.FC = () => {
   return (
     <NavigationContainer>
-      <Drawer.Navigator initialRouteName={ROUTES.FLATLIST_CARD_DISAPPEAR}>
+      <Drawer.Navigator initialRouteName={ROUTES.CIRCULAR_PROGRESS}>
         {DRAWER_ROUTES.map((route) => (
           <Drawer.Screen
             key={route.name}
