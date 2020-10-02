@@ -5,4 +5,5 @@ export const ROUTES = {
   POKEMON_SLIDER: "Pokemon Slider",
   FLATLIST_CARD_DISAPPEAR: "FlatList Card Disappear",
   CIRCULAR_PROGRESS: "Circular Progress",
+  TILT_CAROUSEL: "Tilt Carousel",
 };
