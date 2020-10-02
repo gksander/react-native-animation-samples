@@ -52,24 +52,10 @@ export const TiltCarousel: React.FC = () => {
   const scrollX = React.useRef(new Animated.Value(0)).current;
 
   return (
-    <View style={{ flex: 1 }}>
-      {/*<Image*/}
-      {/*  source={require("./img/summer.jpg")}*/}
-      {/*  style={{*/}
-      {/*    width,*/}
-      {/*    flex: 1,*/}
-      {/*    transform: [*/}
-      {/*      { perspective: 800 },*/}
-      {/*      {*/}
-      {/*        translateX: -0.25 * width,*/}
-      {/*      },*/}
-      {/*      { rotateY: "40deg" },*/}
-      {/*    ],*/}
-      {/*  }}*/}
-      {/*/>*/}
+    <View style={{ flex: 1, backgroundColor: "rgba(30,30,30,0.8)" }}>
       <Animated.FlatList
         data={SLIDES}
-        renderItem={({ item, index }: { item: Slide; index }) => (
+        renderItem={({ item, index }: { item: Slide; index: number }) => (
           <CarouselSlide slide={item} scrollX={scrollX} index={index} />
         )}
         horizontal
@@ -77,13 +63,12 @@ export const TiltCarousel: React.FC = () => {
         showsHorizontalScrollIndicator={false}
         scrollEventThrottle={16}
         decelerationRate={-1}
-        bounces={false}
+        bounces={true}
         keyExtractor={(slide: Slide) => slide.title}
         onScroll={Animated.event(
           [{ nativeEvent: { contentOffset: { x: scrollX } } }],
           { useNativeDriver: true },
         )}
-        contentContainerStyle={{ backgroundColor: "rgba(30,30,30,0.8)" }}
       />
     </View>
   );
