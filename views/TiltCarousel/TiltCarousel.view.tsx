@@ -2,9 +2,8 @@ import * as React from "react";
 import {
   Animated,
   Dimensions,
-  FlatList,
-  Image,
   ImageBackground,
+  StyleSheet,
   View,
 } from "react-native";
 import { AppText } from "../../components/AppText";
@@ -41,9 +40,6 @@ const SLIDES: Slide[] = [
 
 // Utils
 const { width, height } = Dimensions.get("window");
-const AnimatedImageBackground = Animated.createAnimatedComponent(
-  ImageBackground,
-);
 
 /**
  * Actual view
@@ -52,7 +48,7 @@ export const TiltCarousel: React.FC = () => {
   const scrollX = React.useRef(new Animated.Value(0)).current;
 
   return (
-    <View style={{ flex: 1, backgroundColor: "rgba(30,30,30,0.8)" }}>
+    <View style={styles.background}>
       <Animated.FlatList
         data={SLIDES}
         renderItem={({ item, index }: { item: Slide; index: number }) => (
@@ -87,63 +83,70 @@ const CarouselSlide: React.FC<{
   });
   const perspective = scrollX.interpolate({
     inputRange,
-    outputRange: [1000, 800, 1000],
+    outputRange: [1200, 800, 1200],
   });
-  const translateX = scrollX.interpolate({
-    inputRange,
-    outputRange: [-0.4 * width, 0, 0.4 * width],
-  });
+  const translateX = Animated.subtract(scrollX, index * width);
   const rotateY = scrollX.interpolate({
     inputRange,
     outputRange: ["-45deg", "0deg", "45deg"],
   });
+  const opacity = scrollX.interpolate({
+    inputRange,
+    outputRange: [0, 1, 0],
+  });
 
   return (
     <Animated.View
-      style={{
-        width,
-        flex: 1,
-        justifyContent: "center",
-        transform: [{ scale }, { perspective }, { translateX }, { rotateY }],
-        borderRadius: 30,
-        overflow: "hidden",
-      }}
+      style={[
+        styles.cardContainer,
+        {
+          opacity,
+          transform: [{ scale }, { perspective }, { translateX }, { rotateY }],
+        },
+      ]}
     >
       <ImageBackground source={slide.image} style={{ flex: 1 }}>
         <Spacer height={0.7 * height} />
-        <View
-          style={{
-            alignItems: "center",
-            backgroundColor: "rgba(0,0,0,0.3)",
-            padding: 16,
-          }}
-        >
-          <AppText
-            style={{
-              color: "white",
-              fontWeight: "bold",
-              fontSize: 64,
-              textShadowColor: "black",
-              textShadowRadius: 4,
-              textShadowOffset: {
-                width: 1,
-                height: 1,
-              },
-            }}
-          >
-            {slide.title}
-          </AppText>
-          <AppText
-            style={{
-              color: "rgb(230,230,230)",
-              fontWeight: "600",
-              fontSize: 18,
-            }}
-          >
-            {slide.subtitle}
-          </AppText>
+        <View style={styles.cardContentContainer}>
+          <AppText style={styles.title}>{slide.title}</AppText>
+          <AppText style={styles.subtitle}>{slide.subtitle}</AppText>
         </View>
       </ImageBackground>
     </Animated.View>
   );
 };
+
+/**
+ * Styling
+ */
+const styles = StyleSheet.create({
+  background: { flex: 1, backgroundColor: "rgba(30,30,30,0.8)" },
+  cardContainer: {
+    width,
+    flex: 1,
+    justifyContent: "center",
+    borderRadius: 30,
+    overflow: "hidden",
+  },
+  cardContentContainer: {
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.3)",
+    padding: 16,
+  },
+  title: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 64,
+    textShadowColor: "black",
+    textShadowRadius: 4,
+    textShadowOffset: {
+      width: 1,
+      height: 1,
+    },
+  },
+  subtitle: {
+    color: "rgb(230,230,230)",
+    fontWeight: "600",
+    fontSize: 18,
+  },
+});
