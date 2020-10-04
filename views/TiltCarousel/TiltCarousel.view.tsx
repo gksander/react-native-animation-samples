@@ -42,7 +42,7 @@ const SLIDES: Slide[] = [
 const { width, height } = Dimensions.get("window");
 
 /**
- * Actual view
+ * Tilt Carousel View
  */
 export const TiltCarousel: React.FC = () => {
   const scrollX = React.useRef(new Animated.Value(0)).current;
@@ -70,6 +70,9 @@ export const TiltCarousel: React.FC = () => {
   );
 };
 
+/**
+ * Slide item
+ */
 const CarouselSlide: React.FC<{
   slide: Slide;
   scrollX: Animated.Value;
@@ -77,6 +80,10 @@ const CarouselSlide: React.FC<{
 }> = ({ slide, scrollX, index }) => {
   const inputRange = [(index - 1) * width, index * width, (index + 1) * width];
 
+  const opacity = scrollX.interpolate({
+    inputRange,
+    outputRange: [0, 1, 0],
+  });
   const scale = scrollX.interpolate({
     inputRange,
     outputRange: [0.6, 1, 0.6],
@@ -89,10 +96,6 @@ const CarouselSlide: React.FC<{
   const rotateY = scrollX.interpolate({
     inputRange,
     outputRange: ["-45deg", "0deg", "45deg"],
-  });
-  const opacity = scrollX.interpolate({
-    inputRange,
-    outputRange: [0, 1, 0],
   });
 
   return (
