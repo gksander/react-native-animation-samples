@@ -11,6 +11,7 @@ import { PokemonSliderView } from "./views/PokemonSlider/PokemonSlider.view";
 import { CircularProgressView } from "./views/CircularProgress/CircularProgress.view";
 import { FlatlistCardDisappear } from "./views/FlatlistCardDisappear/FlatlistCardDisappear.view";
 import { TiltCarousel } from "./views/TiltCarousel/TiltCarousel.view";
+import { PokedexView } from "./views/Pokedex/Pokedex.view";
 
 // Drawer nav
 const Drawer = createDrawerNavigator();
@@ -18,18 +19,19 @@ const Drawer = createDrawerNavigator();
 // Drawer Routes
 const DRAWER_ROUTES = [
   { name: ROUTES.HOME, component: HomeView },
+  { name: ROUTES.POKEDEX.BASE, component: PokedexView },
+  { name: ROUTES.TILT_CAROUSEL, component: TiltCarousel },
   { name: ROUTES.IMAGE_LOAD, component: ImageLoadView },
   { name: ROUTES.BUTTONS, component: ButtonsView },
   { name: ROUTES.POKEMON_SLIDER, component: PokemonSliderView },
   { name: ROUTES.FLATLIST_CARD_DISAPPEAR, component: FlatlistCardDisappear },
   { name: ROUTES.CIRCULAR_PROGRESS, component: CircularProgressView },
-  { name: ROUTES.TILT_CAROUSEL, component: TiltCarousel },
 ];
 
 const App: React.FC = () => {
   return (
     <NavigationContainer>
-      <Drawer.Navigator initialRouteName={ROUTES.TILT_CAROUSEL}>
+      <Drawer.Navigator initialRouteName={ROUTES.POKEDEX.BASE}>
         {DRAWER_ROUTES.map((route) => (
           <Drawer.Screen
             key={route.name}
