@@ -31,7 +31,7 @@ const DRAWER_ROUTES = [
 const App: React.FC = () => {
   return (
     <NavigationContainer>
-      <Drawer.Navigator initialRouteName={ROUTES.POKEMON_SLIDER}>
+      <Drawer.Navigator initialRouteName={ROUTES.CIRCULAR_PROGRESS}>
         {DRAWER_ROUTES.map((route) => (
           <Drawer.Screen
             key={route.name}

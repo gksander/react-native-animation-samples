@@ -25,6 +25,7 @@ export const CircularProgressView: React.FC = () => {
         currentAmount={currAmount}
         radius={width / 3}
         strokeWidth={15}
+        color="purple"
       />
     </SafeAreaView>
   );
