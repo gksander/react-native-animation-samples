@@ -10,4 +10,5 @@ export const ROUTES = {
   FLATLIST_CARD_DISAPPEAR: "FlatList Card Disappear",
   CIRCULAR_PROGRESS: "Circular Progress",
   TILT_CAROUSEL: "Tilt Carousel",
+  LOOP_CAROUSEL: "Loop Carousel",
 };
